@@ -6,6 +6,8 @@ import (
 	"go-url-shortner/stores"
 	"log"
 	"net/http"
+
+	"github.com/asaskevich/govalidator"
 )
 
 type urlHandler struct {
@@ -19,9 +21,15 @@ func New(store stores.URL) *urlHandler {
 func (u *urlHandler) GetShortURL(w http.ResponseWriter, r *http.Request) {
 	var url models.MyURL
 
-	err := json.NewDecoder(r.Body).Decode(&url)
-	if err != nil {
-		writeResponse(w, http.StatusBadRequest, err.Error())
+	// get request body
+	if err := json.NewDecoder(r.Body).Decode(&url); err != nil {
+		writeResponse(w, http.StatusBadRequest, "bad request")
+		return
+	}
+
+	// to check if input URL is valid or not
+	if !govalidator.IsURL(url.LongURL) {
+		writeResponse(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
