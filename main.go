@@ -14,7 +14,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/short", handler.GetShortURL)
+	r.HandleFunc("/short", handler.GetShortURL).Methods(http.MethodPost)
 
 	http.ListenAndServe(":8080", r)
 }
